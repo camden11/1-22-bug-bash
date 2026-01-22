@@ -4,10 +4,7 @@ on:
   push:
     branches:
       - main
-
-env:
-  DEFAULT_ACCOUNT_ID: ${{ secrets.HUBSPOT_ACCOUNT_ID }}
-  DEFAULT_PERSONAL_ACCESS_KEY: ${{ secrets.HUBSPOT_PERSONAL_ACCESS_KEY }}
+      - qa
 
 jobs:
   deploy:
@@ -16,5 +13,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: HubSpot Project Deploy
+      - name: Deploy to Production
+        if: github.ref == 'refs/heads/main'
         uses: HubSpot/hubspot-project-actions@v1.0.1
+        env:
+          DEFAULT_ACCOUNT_ID: ${{ secrets.HUBSPOT_ACCOUNT_ID }}
+          DEFAULT_PERSONAL_ACCESS_KEY: ${{ secrets.HUBSPOT_PERSONAL_ACCESS_KEY }}
+
+      - name: Deploy to QA
+        if: github.ref == 'refs/heads/qa'
+        uses: HubSpot/hubspot-project-actions@v1.0.1
+        env:
+          DEFAULT_ACCOUNT_ID: ${{ secrets.HUBSPOT_QA_ACCOUNT_ID }}
+          DEFAULT_PERSONAL_ACCESS_KEY: ${{ secrets.HUBSPOT_QA_PERSONAL_ACCESS_KEY }}
